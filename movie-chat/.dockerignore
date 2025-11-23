@@ -1,0 +1,4 @@
+# Ignore Dockerfile to force NIXPACKS usage
+Dockerfile
+Dockerfile.backup
+

@@ -1,0 +1,587 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    overflow-x: hidden;
+  }
+}
+
+/* Cinema-themed CSS Variables */
+:root {
+  --cinema-amber: oklch(0.85 0.15 60);
+  --cinema-purple: oklch(0.5 0.25 290);
+  --cinema-gold: oklch(0.8 0.15 70);
+  --cinema-dark: oklch(0.05 0 0);
+  --cinema-beam: oklch(0.4 0.1 60 / 0.1);
+  --dust-particle: oklch(0.7 0.05 60 / 0.3);
+}
+
+/* Cinema Background */
+.cinema-bg {
+  background: linear-gradient(135deg, oklch(0.03 0 0) 0%, oklch(0.05 0 0) 50%, oklch(0.02 0 0) 100%);
+  background-attachment: fixed;
+  position: relative;
+}
+
+/* Film Grain Texture */
+.cinema-bg::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at 20% 50%, transparent 20%, rgba(255, 255, 255, 0.02) 21%, rgba(255, 255, 255, 0.02) 34%, transparent 35%),
+    linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.05) 26%, transparent 27%),
+    linear-gradient(90deg, transparent 24%, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.05) 26%, transparent 27%);
+  background-size: 3px 3px, 5px 5px, 5px 5px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Diagonal Movie Projector Beam - Top Left to Bottom Right */
+.projector-beam {
+  position: fixed;
+  top: -10vh;
+  left: -10vw;
+  width: 140vw;
+  height: 140vh;
+  background: 
+    /* Main beam - concentrated at top-left, wide at bottom-right */
+    radial-gradient(
+      ellipse 100px 200px at 15% 15%,
+      rgba(255, 191, 0, 0.7) 0%,
+      rgba(255, 191, 0, 0.4) 30%,
+      rgba(255, 191, 0, 0.2) 60%,
+      transparent 100%
+    ),
+    radial-gradient(
+      ellipse 500px 1000px at 85% 85%,
+      rgba(255, 191, 0, 0.3) 0%,
+      rgba(255, 191, 0, 0.15) 30%,
+      rgba(255, 191, 0, 0.05) 60%,
+      transparent 100%
+    );
+  pointer-events: none;
+  z-index: 2;
+  transform: rotate(35deg);
+  transform-origin: 15% 15%;
+}
+
+/* Secondary beam for depth and realism */
+.projector-beam::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(
+      ellipse 80px 160px at 15% 15%,
+      rgba(255, 191, 0, 0.5) 0%,
+      rgba(255, 191, 0, 0.2) 40%,
+      transparent 100%
+    ),
+    radial-gradient(
+      ellipse 400px 800px at 85% 85%,
+      rgba(255, 191, 0, 0.2) 0%,
+      rgba(255, 191, 0, 0.08) 40%,
+      transparent 100%
+    );
+}
+
+/* Subtle flickering effect like real projector */
+.projector-beam::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(
+      ellipse 90px 180px at 15% 15%,
+      rgba(255, 191, 0, 0.4) 0%,
+      rgba(255, 191, 0, 0.15) 50%,
+      transparent 100%
+    );
+  animation: projectorFlicker 4s infinite ease-in-out;
+}
+
+@keyframes projectorFlicker {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+/* Floating Dust Particles */
+.dust-particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+  overflow: hidden;
+}
+
+/* Individual dust particles floating upward */
+.dust-particles::before,
+.dust-particles::after {
+  content: '';
+  position: absolute;
+  background: radial-gradient(circle, rgba(255, 191, 0, 0.2) 0%, rgba(255, 191, 0, 0.1) 50%, transparent 100%);
+  border-radius: 50%;
+  box-shadow: 0 0 1px rgba(255, 191, 0, 0.15);
+}
+
+.dust-particles::before {
+  width: 2px;
+  height: 2px;
+  top: 110%;
+  left: 30%;
+  animation: floatUpVertical1 20s infinite linear;
+}
+
+.dust-particles::after {
+  width: 1px;
+  height: 1px;
+  top: 110%;
+  left: 60%;
+  animation: floatUpVertical2 25s infinite linear;
+}
+
+/* Multiple floating dust particles as background */
+.dust-particles {
+  background: 
+    radial-gradient(1px 1px at 10% 100%, rgba(255, 191, 0, 0.15) 0%, transparent 25%),
+    radial-gradient(1px 1px at 25% 105%, rgba(255, 191, 0, 0.12) 0%, transparent 25%),
+    radial-gradient(2px 2px at 40% 95%, rgba(255, 191, 0, 0.18) 0%, transparent 25%),
+    radial-gradient(1px 1px at 55% 100%, rgba(255, 191, 0, 0.15) 0%, transparent 25%),
+    radial-gradient(1px 1px at 70% 105%, rgba(255, 191, 0, 0.12) 0%, transparent 25%),
+    radial-gradient(1px 1px at 85% 95%, rgba(255, 191, 0, 0.15) 0%, transparent 25%),
+    radial-gradient(2px 2px at 90% 100%, rgba(255, 191, 0, 0.18) 0%, transparent 25%);
+  animation: dustFieldFloatUp 30s infinite linear;
+}
+
+/* Particle floating straight upward - crosses diagonal beam at 30% left */
+@keyframes floatUpVertical1 {
+  0% { 
+    transform: translateY(0px) rotate(0deg); 
+    opacity: 0;
+    filter: brightness(1);
+    box-shadow: 0 0 1px rgba(255, 191, 0, 0.15);
+  }
+  10% { 
+    transform: translateY(-10vh) rotate(5deg); 
+    opacity: 0.2;
+    filter: brightness(1);
+  }
+  
+  /* Gradually approaching diagonal light beam */
+  25% { 
+    transform: translateY(-25vh) rotate(12deg); 
+    opacity: 0.3;
+    filter: brightness(1.2);
+    box-shadow: 0 0 2px rgba(255, 191, 0, 0.2);
+  }
+  30% { 
+    transform: translateY(-30vh) rotate(15deg); 
+    opacity: 0.5;
+    filter: brightness(1.8);
+    box-shadow: 0 0 4px rgba(255, 191, 0, 0.4);
+  }
+  
+  /* Crossing the diagonal light beam - gradual peak */
+  35% { 
+    transform: translateY(-35vh) rotate(18deg); 
+    opacity: 0.8;
+    filter: brightness(3.5);
+    box-shadow: 0 0 15px rgba(255, 191, 0, 0.8);
+  }
+  40% { 
+    transform: translateY(-40vh) rotate(20deg); 
+    opacity: 1;
+    filter: brightness(5);
+    box-shadow: 0 0 25px rgba(255, 191, 0, 1);
+  }
+  45% { 
+    transform: translateY(-45vh) rotate(22deg); 
+    opacity: 0.8;
+    filter: brightness(3.5);
+    box-shadow: 0 0 15px rgba(255, 191, 0, 0.8);
+  }
+  
+  /* Gradually leaving the light beam */
+  50% { 
+    transform: translateY(-50vh) rotate(25deg); 
+    opacity: 0.5;
+    filter: brightness(1.8);
+    box-shadow: 0 0 4px rgba(255, 191, 0, 0.4);
+  }
+  60% { 
+    transform: translateY(-60vh) rotate(30deg); 
+    opacity: 0.3;
+    filter: brightness(1.2);
+    box-shadow: 0 0 2px rgba(255, 191, 0, 0.2);
+  }
+  
+  80% { 
+    transform: translateY(-80vh) rotate(40deg); 
+    opacity: 0.2;
+    filter: brightness(1);
+  }
+  100% { 
+    transform: translateY(-110vh) rotate(50deg); 
+    opacity: 0;
+    filter: brightness(1);
+  }
+}
+
+/* Another particle floating upward - crosses diagonal beam at 60% left */
+@keyframes floatUpVertical2 {
+  0% { 
+    transform: translateY(0px) rotate(0deg); 
+    opacity: 0;
+    filter: brightness(1);
+  }
+  15% { 
+    transform: translateY(-15vh) rotate(8deg); 
+    opacity: 0.15;
+    filter: brightness(1);
+  }
+  
+  /* Gradually approaching diagonal light beam (later crossing) */
+  45% { 
+    transform: translateY(-45vh) rotate(25deg); 
+    opacity: 0.3;
+    filter: brightness(1.1);
+    box-shadow: 0 0 2px rgba(255, 191, 0, 0.2);
+  }
+  50% { 
+    transform: translateY(-50vh) rotate(28deg); 
+    opacity: 0.4;
+    filter: brightness(1.5);
+    box-shadow: 0 0 3px rgba(255, 191, 0, 0.3);
+  }
+  
+  /* Crossing the diagonal light beam - gradual peak */
+  55% { 
+    transform: translateY(-55vh) rotate(30deg); 
+    opacity: 0.7;
+    filter: brightness(2.5);
+    box-shadow: 0 0 10px rgba(255, 191, 0, 0.6);
+  }
+  60% { 
+    transform: translateY(-60vh) rotate(32deg); 
+    opacity: 1;
+    filter: brightness(4.5);
+    box-shadow: 0 0 20px rgba(255, 191, 0, 0.9);
+  }
+  65% { 
+    transform: translateY(-65vh) rotate(35deg); 
+    opacity: 0.7;
+    filter: brightness(2.5);
+    box-shadow: 0 0 10px rgba(255, 191, 0, 0.6);
+  }
+  
+  /* Gradually leaving the light beam */
+  70% { 
+    transform: translateY(-70vh) rotate(38deg); 
+    opacity: 0.4;
+    filter: brightness(1.5);
+    box-shadow: 0 0 3px rgba(255, 191, 0, 0.3);
+  }
+  75% { 
+    transform: translateY(-75vh) rotate(40deg); 
+    opacity: 0.3;
+    filter: brightness(1.1);
+  }
+  
+  90% { 
+    transform: translateY(-90vh) rotate(48deg); 
+    opacity: 0.15;
+    filter: brightness(1);
+  }
+  100% { 
+    transform: translateY(-110vh) rotate(55deg); 
+    opacity: 0;
+    filter: brightness(1);
+  }
+}
+
+/* Background dust floating straight upward */
+@keyframes dustFieldFloatUp {
+  0% { 
+    transform: translateY(0px); 
+    filter: brightness(1);
+  }
+  25% { 
+    transform: translateY(-25vh); 
+    filter: brightness(1.1);
+  }
+  40% { 
+    transform: translateY(-40vh); 
+    filter: brightness(1.8);
+  }
+  50% { 
+    transform: translateY(-50vh); 
+    filter: brightness(2.2);
+  }
+  60% { 
+    transform: translateY(-60vh); 
+    filter: brightness(1.8);
+  }
+  75% { 
+    transform: translateY(-75vh); 
+    filter: brightness(1.1);
+  }
+  100% { 
+    transform: translateY(-110vh); 
+    filter: brightness(1);
+  }
+}
+
+/* Neo-glass Glassmorphism */
+.neo-glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Message Bubbles */
+.message-user {
+  background: linear-gradient(135deg, var(--cinema-amber), var(--cinema-gold));
+  color: var(--cinema-dark);
+  border-radius: 18px 18px 4px 18px;
+  padding: 12px 18px;
+  margin: 8px 0;
+  margin-left: auto;
+  margin-right: 0;
+  max-width: 80%;
+  box-shadow: 
+    0 4px 20px rgba(255, 191, 0, 0.3),
+    0 2px 8px rgba(255, 191, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 191, 0, 0.4);
+}
+
+.message-ai {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  color: rgba(255, 255, 255, 0.9);
+  border-radius: 18px 18px 18px 4px;
+  padding: 12px 18px;
+  margin: 8px 0;
+  margin-left: 0;
+  margin-right: auto;
+  max-width: 80%;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 4px 16px rgba(255, 191, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Glowing text effects */
+.glow-amber {
+  color: var(--cinema-amber);
+  text-shadow: 0 0 20px var(--cinema-amber);
+}
+
+.glow-purple {
+  color: var(--cinema-purple);
+  text-shadow: 0 0 20px var(--cinema-purple);
+}
+
+/* Smooth animations */
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--cinema-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--cinema-amber);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--cinema-gold);
+}
+
+/* Mobile modal slide down animation */
+@media (max-width: 768px) {
+  .mobile-slide-down[data-state="open"] {
+    animation: slideInFromBottom 0.3s ease-out;
+  }
+  
+  .mobile-slide-down[data-state="closed"] {
+    animation: slideOutToBottom 0.3s ease-in;
+  }
+}
+
+@keyframes slideInFromBottom {
+  from {
+    transform: translate(-50%, -40%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, -50%);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutToBottom {
+  from {
+    transform: translate(-50%, -50%);
+    opacity: 1;
+  }
+  to {
+    transform: translate(-50%, -40%);
+    opacity: 0;
+  }
+}
