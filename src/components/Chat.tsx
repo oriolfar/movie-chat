@@ -81,11 +81,7 @@ const CINEMA_LOADING_PHRASES = [
   "🎨 Consulting with special effects makeup artists...",
 ];
 
-interface ChatProps {
-  onInputFocus?: () => void;
-}
-
-export default function Chat({ onInputFocus }: ChatProps) {
+export default function Chat() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
@@ -553,11 +549,9 @@ export default function Chat({ onInputFocus }: ChatProps) {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
-              onFocus={(e) => {
-                // Trigger header fade out when input is focused
-                onInputFocus?.();
-                // Set input focused state for mobile layout adjustment
-                setIsInputFocused(true);
+            onFocus={(e) => {
+              // Set input focused state for mobile layout adjustment
+              setIsInputFocused(true);
                 // On mobile, ensure input stays visible when keyboard appears
                 if (isMobile) {
                   setTimeout(() => {
