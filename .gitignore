@@ -53,13 +53,8 @@ Thumbs.db
 *.temp
 .cache/
 
-# n8n workflow files (not used in frontend)
-*workflow*.json
-*Workflow*.json
-*WORKFLOW*.json
-fliming_json*.json
-n8n-webhook*.json
-docker-compose.yml
-n8n-railway*.sh
-n8n-railway*.txt
+# Development and deployment configs (not needed in repo)
+.cursor/
+.railwayignore
+railway.json
 
