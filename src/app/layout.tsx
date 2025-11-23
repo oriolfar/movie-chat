@@ -25,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased cinema-bg h-screen overflow-hidden`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased cinema-bg h-[100dvh] md:h-screen overflow-hidden`}
       >
         {/* Cinema atmospheric effects */}
         <div className="projector-beam" />

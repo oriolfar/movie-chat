@@ -84,6 +84,7 @@ export default function Chat({ onInputFocus }: ChatProps) {
   const [isTyping, setIsTyping] = useState(false);
   const [loadingPhrase, setLoadingPhrase] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -204,9 +205,9 @@ export default function Chat({ onInputFocus }: ChatProps) {
   };
 
   return (
-    <div className="flex flex-col h-full neo-glass rounded-2xl overflow-hidden shadow-2xl">
-      {/* Chat Messages - Fixed height with internal scroll */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-4 min-h-0">
+    <div className="flex flex-col h-full neo-glass rounded-2xl md:rounded-2xl rounded-t-2xl rounded-b-none md:rounded-b-2xl overflow-hidden shadow-2xl chat-container">
+      {/* Chat Messages - Fixed height with internal scroll, adjusts for mobile keyboard */}
+      <div className="flex-1 overflow-y-auto p-6 space-y-4 min-h-0 pb-4 md:pb-6">
         <AnimatePresence>
           {messages.map((message) => (
             <motion.div
@@ -441,26 +442,39 @@ export default function Chat({ onInputFocus }: ChatProps) {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Section */}
-      <div className="border-t border-white/10 p-4 bg-black/20">
+      {/* Input Section - Fixed at bottom, always visible on mobile */}
+      <div className="border-t border-white/10 p-3 md:p-4 bg-black/20 flex-shrink-0 safe-area-inset-bottom input-section">
         <div className="flex gap-2">
           <Input
+            ref={inputRef}
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyPress={handleKeyPress}
-            onFocus={() => {
+            onFocus={(e) => {
               // Trigger header fade out when input is focused
               onInputFocus?.();
+              // On mobile, ensure input stays visible when keyboard appears
+              if (window.innerWidth < 768) {
+                setTimeout(() => {
+                  const input = e.target as HTMLElement;
+                  // Scroll input container into view
+                  input.closest('.flex-shrink-0')?.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'end',
+                    inline: 'nearest'
+                  });
+                }, 300);
+              }
             }}
             placeholder="Tell me what kind of movies you're in the mood for..."
-            className="flex-1 bg-black/40 border-cinema-amber/20 text-white placeholder-gray-400 focus:border-cinema-amber focus:ring-cinema-amber focus:ring-2 focus:ring-cinema-amber/50"
+            className="flex-1 bg-black/40 border-cinema-amber/20 text-white placeholder-gray-400 focus:border-cinema-amber focus:ring-cinema-amber focus:ring-2 focus:ring-cinema-amber/50 text-base md:text-sm"
           />
           <Button
             onClick={handleSendMessage}
             disabled={!inputValue.trim() || isTyping}
-            className="bg-cinema-amber hover:bg-cinema-gold text-cinema-dark"
+            className="bg-cinema-amber hover:bg-cinema-gold text-cinema-dark flex-shrink-0"
           >
-            <Send className="w-4 h-4" />
+            <Send className="w-5 h-5 md:w-4 md:h-4" />
           </Button>
         </div>
       </div>

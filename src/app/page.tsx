@@ -15,7 +15,7 @@ export default function Home() {
   };
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden">
+    <div className="h-[100dvh] md:h-screen flex flex-col overflow-hidden">
       {/* Header - disappears when user focuses on input */}
       <AnimatePresence mode="wait">
         {showHeader && (
@@ -53,7 +53,7 @@ export default function Home() {
       </AnimatePresence>
 
       {/* Main Chat Interface - expands to fill remaining space */}
-      <main className="flex-1 flex flex-col max-w-4xl mx-auto w-full px-4 pb-4 pt-4 min-h-0 overflow-hidden">
+      <main className="flex-1 flex flex-col max-w-4xl mx-auto w-full px-4 pb-0 md:pb-4 pt-4 min-h-0 overflow-hidden">
         <Chat onInputFocus={handleInputFocus} />
       </main>
     </div>
