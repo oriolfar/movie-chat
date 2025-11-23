@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Star, Calendar, Film, Users, X as XIcon } from "lucide-react";
+import { Star, Calendar, Film, Users, X as XIcon, ChevronDown } from "lucide-react";
 import Image from "next/image";
 
 interface Movie {
@@ -36,6 +36,9 @@ interface MovieCardProps {
 
 export default function MovieCard({ movie, isBestMatch = false, rank }: MovieCardProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [swipeY, setSwipeY] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartY = useRef(0);
 
   return (
     <>
@@ -166,13 +169,55 @@ export default function MovieCard({ movie, isBestMatch = false, rank }: MovieCar
       {/* Detail Modal with backdrop image and fade overlay */}
       <AnimatePresence>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden p-0 border-cinema-amber/40 backdrop-blur-xl shadow-2xl bg-transparent mobile-slide-down" showCloseButton={true}>
+          <DialogContent 
+            className="max-w-6xl max-h-[85vh] md:max-h-[90vh] overflow-hidden md:overflow-visible p-0 border-cinema-amber/40 backdrop-blur-xl shadow-2xl bg-transparent mobile-slide-down md:rounded-t-2xl"
+            showCloseButton={false}
+            onInteractOutside={(e) => {
+              // Allow closing by clicking outside on mobile
+              if (window.innerWidth < 768) {
+                setIsDialogOpen(false);
+              }
+            }}
+          >
+            {/* Mobile Swipe Indicator - Just above modal */}
+            <div className="md:hidden absolute -top-3 left-1/2 -translate-x-1/2 z-[60] flex items-center justify-center pointer-events-none">
+              <motion.div
+                animate={{ y: [0, 4, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                className="w-20 h-2.5 bg-yellow-400 rounded-full shadow-xl shadow-yellow-400/70"
+              />
+            </div>
+            
             <motion.div
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              animate={{ opacity: 1, y: swipeY }}
               exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
+              transition={{ duration: isDragging ? 0 : 0.3, ease: "easeOut" }}
               className="relative w-full h-full"
+              onTouchStart={(e) => {
+                if (window.innerWidth < 768) {
+                  dragStartY.current = e.touches[0].clientY;
+                  setIsDragging(true);
+                }
+              }}
+              onTouchMove={(e) => {
+                if (window.innerWidth < 768 && isDragging) {
+                  const currentY = e.touches[0].clientY;
+                  const deltaY = currentY - dragStartY.current;
+                  if (deltaY > 0) {
+                    setSwipeY(deltaY);
+                  }
+                }
+              }}
+              onTouchEnd={() => {
+                if (window.innerWidth < 768 && isDragging) {
+                  if (swipeY > 100) {
+                    setIsDialogOpen(false);
+                  }
+                  setSwipeY(0);
+                  setIsDragging(false);
+                }
+              }}
             >
               {/* Backdrop Image - Full modal background with smooth gradient blur to sharp */}
               {movie.backdrop_path && (
@@ -240,11 +285,11 @@ export default function MovieCard({ movie, isBestMatch = false, rank }: MovieCar
               )}
               
               {/* Content */}
-              <div className="relative z-10 flex flex-col h-full max-h-[90vh]">
-                {/* Mobile Close Button - Visible only on mobile */}
+              <div className="relative z-10 flex flex-col h-full max-h-[85vh] md:max-h-[90vh]">
+                {/* Desktop close button - Top left corner of card (hidden on mobile) */}
                 <button
                   onClick={() => setIsDialogOpen(false)}
-                  className="md:hidden absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white hover:bg-black/80 transition-all duration-200 shadow-lg"
+                  className="hidden md:flex absolute -top-4 -left-4 z-50 w-10 h-10 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 items-center justify-center text-white hover:bg-black/80 transition-all duration-200 shadow-lg"
                   aria-label="Close"
                 >
                   <XIcon className="w-5 h-5" />

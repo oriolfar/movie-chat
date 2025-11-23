@@ -28,6 +28,20 @@ interface Movie {
   tmdb_available?: boolean;
 }
 
+// Funny cinema phrases for when no movies are found
+const NO_MOVIES_PHRASES = [
+  "🎬 OMG! No movies to fill your requirements! Let's try again with a different mood!",
+  "🍿 The reel came up empty! Let's rewind and try a different genre!",
+  "🎥 Cut! No matches found. Let's do another take with different criteria!",
+  "🎭 The curtain closed with no show! Let's change the script and try again!",
+  "🎞️ The film strip broke! No movies matched. Let's splice in a new request!",
+  "🎪 The circus left town empty-handed! Let's try a different act!",
+  "🎨 The canvas is blank! No movies painted the picture. Let's try new colors!",
+  "🎬 Director's cut: No movies in the final edit! Let's reshoot with new requirements!",
+  "🍿 Popcorn's ready but no show! Let's change the program!",
+  "🎥 The projector is running but the reel is empty! Let's load a new request!",
+];
+
 // 35 funny cinema phrases to show while loading (in English)
 const CINEMA_LOADING_PHRASES = [
   "🎬 Reviewing my film collection...",
@@ -83,8 +97,20 @@ export default function Chat({ onInputFocus }: ChatProps) {
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [loadingPhrase, setLoadingPhrase] = useState("");
+  const [isInputFocused, setIsInputFocused] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Detect mobile on mount and resize
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -142,33 +168,77 @@ export default function Chat({ onInputFocus }: ChatProps) {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: `HTTP ${response.status}` }));
-        console.error("API Error:", errorData);
-        throw new Error(errorData.error || errorData.details || `HTTP error! status: ${response.status}`);
+        let errorData: any = {};
+        let errorMessage = `HTTP error! status: ${response.status}`;
+        
+        try {
+          const responseText = await response.text();
+          if (responseText && responseText.trim()) {
+            try {
+              errorData = JSON.parse(responseText);
+            } catch (parseError) {
+              // If JSON parsing fails, use the text as error message
+              errorMessage = responseText || errorMessage;
+            }
+          }
+        } catch (textError) {
+          // If reading response fails, use status text
+          errorMessage = response.statusText || errorMessage;
+        }
+        
+        // Extract error message from errorData if available
+        if (errorData && typeof errorData === 'object') {
+          errorMessage = errorData.error || errorData.details || errorData.message || errorMessage;
+        }
+        
+        // Safe error logging - only log if there's meaningful data
+        if (Object.keys(errorData).length > 0 || response.statusText) {
+          console.error("API Error:", {
+            status: response.status,
+            statusText: response.statusText,
+            error: errorMessage,
+            ...(Object.keys(errorData).length > 0 && { data: errorData })
+          });
+        } else {
+          console.error("API Error:", `HTTP ${response.status}: ${errorMessage}`);
+        }
+        
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
 
-      // Debug: Log received data
+      // Check if no movies were received - safe check
+      const movies = Array.isArray(data.movies) ? data.movies : [];
+      const moviesCount = movies.length;
+      const hasMovies = moviesCount > 0;
+      const responseText = typeof data.response === 'string' ? data.response : '';
+
+      // Debug: Log received data (safely)
       console.log("✅ API Response received:", {
-        response: data.response,
-        moviesCount: data.movies?.length || 0,
-        firstMovie: data.movies?.[0] ? {
-          id: data.movies[0].id,
-          title: data.movies[0].title,
-          year: data.movies[0].year,
-          rating: data.movies[0].rating,
-          score: data.movies[0].score,
-          poster: data.movies[0].poster?.substring(0, 50) || 'no poster'
+        response: responseText,
+        moviesCount: moviesCount,
+        firstMovie: hasMovies && movies[0] ? {
+          id: movies[0].id,
+          title: movies[0].title,
+          year: movies[0].year,
+          rating: movies[0].rating,
+          score: movies[0].score,
+          poster: movies[0].poster?.substring(0, 50) || 'no poster'
         } : null
       });
 
+      // If no movies, show special funny message
+      const messageText = hasMovies 
+        ? (responseText || "I received your message!")
+        : NO_MOVIES_PHRASES[Math.floor(Math.random() * NO_MOVIES_PHRASES.length)];
+
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: data.response || "I received your message!",
+        text: messageText,
         sender: "ai",
         timestamp: new Date(),
-        movies: data.movies || [],
+        movies: movies,
       };
       
       // Debug: Log message with movies
@@ -178,15 +248,25 @@ export default function Chat({ onInputFocus }: ChatProps) {
     } catch (error) {
       console.error("Error sending message:", error);
       
-      // More detailed error message
+      // More detailed error message with cinema humor
       const errorDetails = error instanceof Error ? error.message : String(error);
+      let errorText = "I'm having trouble connecting right now. Please try again in a moment.";
+      
+      if (errorDetails.includes("N8N webhook URL not configured")) {
+        errorText = "🎬 Configuration error: My movie database connection is missing! Please check your .env.local file.";
+      } else if (errorDetails.includes("N8N request failed")) {
+        errorText = "🍿 The projector broke! I'm having trouble connecting to my movie database. Please check that the n8n workflow is active.";
+      } else if (errorDetails.includes("fetch") || errorDetails.includes("network")) {
+        errorText = "🎥 Network error: The film reel got stuck! Please check your connection and try again.";
+      } else if (errorDetails.includes("timeout")) {
+        errorText = "⏱️ The movie is running late! Request timed out. Please try again.";
+      } else {
+        errorText = "🎭 Something went wrong behind the scenes! Please try again in a moment.";
+      }
+      
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: errorDetails.includes("N8N webhook URL not configured") 
-          ? "Configuration error: N8N webhook URL is not set. Please check your .env.local file."
-          : errorDetails.includes("N8N request failed")
-          ? "I'm having trouble connecting to my movie database. Please check that the n8n workflow is active."
-          : "I'm having trouble connecting right now. Please try again in a moment.",
+        text: errorText,
         sender: "ai",
         timestamp: new Date(),
       };
@@ -205,9 +285,21 @@ export default function Chat({ onInputFocus }: ChatProps) {
   };
 
   return (
-    <div className="flex flex-col h-full neo-glass rounded-2xl md:rounded-2xl rounded-t-2xl rounded-b-none md:rounded-b-2xl overflow-hidden shadow-2xl chat-container">
+    <motion.div 
+      className="flex flex-col neo-glass rounded-2xl overflow-hidden shadow-2xl chat-container md:h-full"
+      animate={{
+        height: isInputFocused && isMobile ? '50vh' : isMobile ? '90vh' : '100%',
+      }}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
+    >
       {/* Chat Messages - Fixed height with internal scroll, adjusts for mobile keyboard */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-4 min-h-0 pb-4 md:pb-6">
+      <motion.div 
+        className="flex-1 overflow-y-auto p-6 space-y-4 min-h-0 md:pb-6"
+        animate={{
+          paddingBottom: !isInputFocused && isMobile ? '10%' : isMobile ? '1rem' : '1.5rem',
+        }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+      >
         <AnimatePresence>
           {messages.map((message) => (
             <motion.div
@@ -246,13 +338,13 @@ export default function Chat({ onInputFocus }: ChatProps) {
                   >
                     <div className="mb-4 text-sm text-gray-300">
                       <span>
-                        Found {message.movies.length} movie{message.movies.length > 1 ? 's' : ''} for you!{' '}
+                        Found {message.movies?.length || 0} movie{(message.movies?.length || 0) > 1 ? 's' : ''} for you!{' '}
                         <span className="text-gray-500">(sorted by relevance)</span>
                       </span>
                     </div>
                     
                     {/* Best Match - Highlighted with Top 3 Medals */}
-                    {message.movies.length > 0 && (() => {
+                    {message.movies && message.movies.length > 0 && (() => {
                       const sortedMovies = [...message.movies].sort((a, b) => (b.score || 0) - (a.score || 0));
                       const bestMatch = sortedMovies[0];
                       const otherMovies = sortedMovies.slice(1);
@@ -319,34 +411,40 @@ export default function Chat({ onInputFocus }: ChatProps) {
                                     >
                                       {bestMatch.title}
                                     </motion.h3>
-                                    <motion.p
-                                      initial={{ opacity: 0 }}
-                                      animate={{ opacity: 1 }}
-                                      transition={{ delay: 1 }}
-                                      className="text-gray-300 text-sm leading-relaxed line-clamp-4 mb-4"
-                                    >
-                                      {bestMatch.description}
-                                    </motion.p>
+                                    {bestMatch.description && (
+                                      <motion.p
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ delay: 1 }}
+                                        className="text-gray-300 text-sm leading-relaxed line-clamp-4 mb-4"
+                                      >
+                                        {bestMatch.description}
+                                      </motion.p>
+                                    )}
                                     <motion.div
                                       initial={{ opacity: 0, y: 10 }}
                                       animate={{ opacity: 1, y: 0 }}
                                       transition={{ delay: 1.1 }}
                                       className="flex flex-wrap gap-4 text-sm"
                                     >
-                                      <motion.span
-                                        className="flex items-center gap-2 text-gray-300"
-                                        whileHover={{ scale: 1.05, x: 5 }}
-                                      >
-                                        <Calendar className="w-4 h-4 text-cinema-amber" />
-                                        <span className="font-medium">{bestMatch.year}</span>
-                                      </motion.span>
-                                      <motion.span
-                                        className="flex items-center gap-2 text-gray-300"
-                                        whileHover={{ scale: 1.05, x: 5 }}
-                                      >
-                                        <Star className="w-4 h-4 fill-cinema-amber text-cinema-amber" />
-                                        <span className="font-medium">{bestMatch.rating?.toFixed(1)}/10</span>
-                                      </motion.span>
+                                      {bestMatch.year && (
+                                        <motion.span
+                                          className="flex items-center gap-2 text-gray-300"
+                                          whileHover={{ scale: 1.05, x: 5 }}
+                                        >
+                                          <Calendar className="w-4 h-4 text-cinema-amber" />
+                                          <span className="font-medium">{bestMatch.year}</span>
+                                        </motion.span>
+                                      )}
+                                      {bestMatch.rating && (
+                                        <motion.span
+                                          className="flex items-center gap-2 text-gray-300"
+                                          whileHover={{ scale: 1.05, x: 5 }}
+                                        >
+                                          <Star className="w-4 h-4 fill-cinema-amber text-cinema-amber" />
+                                          <span className="font-medium">{bestMatch.rating.toFixed(1)}/10</span>
+                                        </motion.span>
+                                      )}
                                       {bestMatch.vote_count && (
                                         <motion.span
                                           className="flex items-center gap-2 text-gray-300"
@@ -440,44 +538,59 @@ export default function Chat({ onInputFocus }: ChatProps) {
         )}
 
         <div ref={messagesEndRef} />
-      </div>
+      </motion.div>
 
       {/* Input Section - Fixed at bottom, always visible on mobile */}
-      <div className="border-t border-white/10 p-3 md:p-4 bg-black/20 flex-shrink-0 safe-area-inset-bottom input-section">
-        <div className="flex gap-2">
-          <Input
-            ref={inputRef}
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyPress={handleKeyPress}
-            onFocus={(e) => {
-              // Trigger header fade out when input is focused
-              onInputFocus?.();
-              // On mobile, ensure input stays visible when keyboard appears
-              if (window.innerWidth < 768) {
-                setTimeout(() => {
-                  const input = e.target as HTMLElement;
-                  // Scroll input container into view
-                  input.closest('.flex-shrink-0')?.scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'end',
-                    inline: 'nearest'
-                  });
-                }, 300);
-              }
-            }}
-            placeholder="Tell me what kind of movies you're in the mood for..."
-            className="flex-1 bg-black/40 border-cinema-amber/20 text-white placeholder-gray-400 focus:border-cinema-amber focus:ring-cinema-amber focus:ring-2 focus:ring-cinema-amber/50 text-base md:text-sm"
-          />
-          <Button
-            onClick={handleSendMessage}
-            disabled={!inputValue.trim() || isTyping}
-            className="bg-cinema-amber hover:bg-cinema-gold text-cinema-dark flex-shrink-0"
-          >
-            <Send className="w-5 h-5 md:w-4 md:h-4" />
-          </Button>
+      <div className="relative border-t border-white/10 bg-gradient-to-t from-black/60 via-black/40 to-black/20 flex-shrink-0 safe-area-inset-bottom input-section rounded-b-2xl">
+        {/* Decorative top border with glow effect */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cinema-amber/50 to-transparent" />
+        
+        {/* Main input container with improved padding */}
+        <div className="p-4 md:p-5 pb-6 md:pb-5">
+          <div className="flex gap-3 items-center">
+            <Input
+              ref={inputRef}
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyPress={handleKeyPress}
+              onFocus={(e) => {
+                // Trigger header fade out when input is focused
+                onInputFocus?.();
+                // Set input focused state for mobile layout adjustment
+                setIsInputFocused(true);
+                // On mobile, ensure input stays visible when keyboard appears
+                if (isMobile) {
+                  setTimeout(() => {
+                    const input = e.target as HTMLElement;
+                    // Scroll input container into view
+                    input.closest('.flex-shrink-0')?.scrollIntoView({ 
+                      behavior: 'smooth', 
+                      block: 'end',
+                      inline: 'nearest'
+                    });
+                  }, 300);
+                }
+              }}
+              onBlur={() => {
+                // Reset input focused state when input loses focus
+                setIsInputFocused(false);
+              }}
+              placeholder="Tell me what kind of movies you're in the mood for..."
+              className="flex-1 bg-black/50 border-cinema-amber/30 text-white placeholder-gray-400 focus:border-cinema-amber focus:ring-cinema-amber focus:ring-2 focus:ring-cinema-amber/50 focus:bg-black/60 text-base md:text-sm h-12 md:h-10 rounded-xl shadow-lg shadow-black/20 transition-all duration-200"
+            />
+            <Button
+              onClick={handleSendMessage}
+              disabled={!inputValue.trim() || isTyping}
+              className="bg-cinema-amber hover:bg-cinema-gold text-cinema-dark flex-shrink-0 h-12 md:h-10 w-12 md:w-10 p-0 rounded-xl shadow-lg shadow-cinema-amber/20 hover:shadow-cinema-amber/40 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Send className="w-5 h-5 md:w-4 md:h-4" />
+            </Button>
+          </div>
         </div>
+        
+        {/* Bottom decorative gradient fade */}
+        <div className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
       </div>
-    </div>
+    </motion.div>
   );
 } 
