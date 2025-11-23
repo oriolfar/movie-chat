@@ -53,8 +53,7 @@ Thumbs.db
 *.temp
 .cache/
 
-# Development and deployment configs (not needed in repo)
+# Development configs (not needed in repo)
 .cursor/
 .railwayignore
-railway.json
 

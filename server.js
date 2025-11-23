@@ -4,9 +4,8 @@ const next = require('next');
 
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = '0.0.0.0';
-// Railway sets PORT automatically based on the custom port setting
-// Make sure Railway's custom port matches the PORT env var (or remove PORT to use custom port)
-const port = parseInt(process.env.PORT || '3000', 10);
+// Use PORT from env (Railway sets this to 8080), or default to 3000 for local development
+const port = parseInt(process.env.PORT || (dev ? '3000' : '8080'), 10);
 
 const app = next({ dev, hostname, port });
 const handle = app.getRequestHandler();
