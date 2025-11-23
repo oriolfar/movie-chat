@@ -282,28 +282,79 @@ export default function Chat() {
 
   return (
     <motion.div 
-      className="flex flex-col neo-glass rounded-2xl overflow-hidden shadow-2xl chat-container md:h-full"
-      animate={{
+      className="flex flex-col neo-glass rounded-2xl overflow-visible md:overflow-hidden shadow-2xl chat-container md:h-full"
+      initial={{ 
+        y: 200, 
+        opacity: 0, 
+        scale: 0.75,
+        rotateX: 15,
+        filter: "blur(15px) brightness(0.8)"
+      }}
+      animate={{ 
+        y: 0, 
+        opacity: 1, 
+        scale: 1,
+        rotateX: 0,
+        filter: "blur(0px) brightness(1)",
         height: isInputFocused && isMobile ? '50vh' : isMobile ? '90vh' : '100%',
       }}
-      transition={{ duration: 0.3, ease: "easeInOut" }}
+      transition={{ 
+        type: "spring",
+        stiffness: 60,
+        damping: 20,
+        mass: 0.7,
+        opacity: { duration: 0.7, ease: "easeOut" },
+        filter: { duration: 1, ease: "easeOut" },
+        rotateX: { duration: 0.9, ease: "easeOut" },
+        height: { duration: 0.3, ease: "easeInOut" }
+      }}
+      style={{
+        boxShadow: "0 30px 80px rgba(255, 191, 0, 0.4), 0 0 60px rgba(255, 191, 0, 0.2), 0 10px 30px rgba(0, 0, 0, 0.5)",
+        transformStyle: "preserve-3d",
+        perspective: "1000px"
+      }}
     >
       {/* Chat Messages - Fixed height with internal scroll, adjusts for mobile keyboard */}
       <motion.div 
         className="flex-1 overflow-y-auto p-6 space-y-4 min-h-0 md:pb-6"
-        animate={{
+        initial={{ y: 100, opacity: 0 }}
+        animate={{ 
+          y: 0, 
+          opacity: 1,
           paddingBottom: !isInputFocused && isMobile ? '10%' : isMobile ? '1rem' : '1.5rem',
         }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
+        transition={{ 
+          y: { delay: 0.3, duration: 0.8, type: "spring", stiffness: 80, damping: 20 },
+          opacity: { delay: 0.3, duration: 0.6 },
+          paddingBottom: { duration: 0.3, ease: "easeInOut" }
+        }}
       >
         <AnimatePresence>
-          {messages.map((message) => (
+          {messages.map((message, index) => (
             <motion.div
               key={message.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
+              initial={{ 
+                opacity: 0, 
+                y: 80, 
+                scale: 0.95
+              }}
+              animate={{ 
+                opacity: 1, 
+                y: 0, 
+                scale: 1
+              }}
+              exit={{ 
+                opacity: 0, 
+                y: -20,
+                scale: 0.95
+              }}
+              transition={{ 
+                type: "spring",
+                stiffness: 90,
+                damping: 22,
+                delay: index === 0 ? 0.6 : 0.15,
+                duration: 0.6
+              }}
               className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
             >
               <div className={`max-w-xs md:max-w-md lg:max-w-lg ${
@@ -327,9 +378,15 @@ export default function Chat() {
                 {/* Movie Recommendations */}
                 {message.movies && message.movies.length > 0 && (
                   <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5, duration: 0.5 }}
+                    initial={{ opacity: 0, y: 60, scale: 0.9 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ 
+                      delay: 0.7, 
+                      duration: 0.8,
+                      type: "spring",
+                      stiffness: 70,
+                      damping: 20
+                    }}
                     className="mt-6"
                   >
                     <div className="mb-4 text-sm text-gray-300">
@@ -350,14 +407,14 @@ export default function Chat() {
                           {/* Best Match Section with enhanced animations */}
                           {bestMatch && bestMatch.title && (
                             <motion.div
-                              initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                              initial={{ opacity: 0, y: 80, scale: 0.9 }}
                               animate={{ opacity: 1, y: 0, scale: 1 }}
                               transition={{ 
-                                delay: 0.6, 
-                                duration: 0.6,
+                                delay: 0.9, 
+                                duration: 0.9,
                                 type: "spring",
-                                stiffness: 100,
-                                damping: 15
+                                stiffness: 70,
+                                damping: 20
                               }}
                               className="mb-8 relative"
                             >
@@ -460,24 +517,30 @@ export default function Chat() {
                           {/* Other Movies Grid with staggered animations and Top 2-3 Medals */}
                           {otherMovies.length > 0 && (
                             <motion.div
-                              initial={{ opacity: 0 }}
-                              animate={{ opacity: 1 }}
-                              transition={{ delay: 1.2 }}
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ 
+                                delay: 1.2,
+                                duration: 0.6,
+                                type: "spring",
+                                stiffness: 100,
+                                damping: 20
+                              }}
                               className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-2"
                             >
                               {otherMovies.map((movie, index) => (
                                 <motion.div
                                   key={movie.id}
-                                  initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                                  initial={{ opacity: 0, scale: 0.85, y: 60 }}
                                   animate={{ opacity: 1, scale: 1, y: 0 }}
                                   transition={{ 
-                                    delay: 1.3 + index * 0.08, 
-                                    duration: 0.4,
+                                    delay: 1.1 + index * 0.1, 
+                                    duration: 0.7,
                                     type: "spring",
-                                    stiffness: 200,
+                                    stiffness: 100,
                                     damping: 20
                                   }}
-                                  whileHover={{ y: -5 }}
+                                  whileHover={{ y: -8, scale: 1.05 }}
                                 >
                                   <MovieCard 
                                     movie={movie} 
@@ -501,10 +564,15 @@ export default function Chat() {
         {/* Typing Indicator with Random Cinema Phrases */}
         {isTyping && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 60 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
+            transition={{ 
+              type: "spring",
+              stiffness: 90,
+              damping: 20,
+              duration: 0.6
+            }}
             className="flex justify-start"
           >
             <div className="message-ai">
@@ -537,7 +605,18 @@ export default function Chat() {
       </motion.div>
 
       {/* Input Section - Fixed at bottom, always visible on mobile */}
-      <div className="relative border-t border-white/10 bg-gradient-to-t from-black/60 via-black/40 to-black/20 flex-shrink-0 safe-area-inset-bottom input-section rounded-b-2xl">
+      <motion.div 
+        className="relative border-t border-white/10 bg-gradient-to-t from-black/60 via-black/40 to-black/20 flex-shrink-0 safe-area-inset-bottom input-section rounded-b-2xl"
+        initial={{ y: 120, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ 
+          delay: 0.5,
+          type: "spring",
+          stiffness: 75,
+          damping: 22,
+          duration: 0.9
+        }}
+      >
         {/* Decorative top border with glow effect */}
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cinema-amber/50 to-transparent" />
         
@@ -584,7 +663,7 @@ export default function Chat() {
         
         {/* Bottom decorative gradient fade */}
         <div className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
-      </div>
+      </motion.div>
     </motion.div>
   );
 } 
