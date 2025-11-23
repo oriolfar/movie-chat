@@ -168,20 +168,20 @@ export default function Chat({ onInputFocus }: ChatProps) {
       });
 
       if (!response.ok) {
-        let errorData: any = {};
+        let errorData: { error?: string; details?: string; message?: string } = {};
         let errorMessage = `HTTP error! status: ${response.status}`;
         
         try {
           const responseText = await response.text();
           if (responseText && responseText.trim()) {
             try {
-              errorData = JSON.parse(responseText);
-            } catch (parseError) {
+              errorData = JSON.parse(responseText) as { error?: string; details?: string; message?: string };
+            } catch {
               // If JSON parsing fails, use the text as error message
               errorMessage = responseText || errorMessage;
             }
           }
-        } catch (textError) {
+        } catch {
           // If reading response fails, use status text
           errorMessage = response.statusText || errorMessage;
         }

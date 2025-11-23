@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Star, Calendar, Film, Users, X as XIcon, ChevronDown } from "lucide-react";
+import { Star, Calendar, Film, Users, X as XIcon } from "lucide-react";
 import Image from "next/image";
 
 interface Movie {
@@ -172,7 +172,7 @@ export default function MovieCard({ movie, isBestMatch = false, rank }: MovieCar
           <DialogContent 
             className="max-w-6xl max-h-[85vh] md:max-h-[90vh] overflow-hidden md:overflow-visible p-0 border-cinema-amber/40 backdrop-blur-xl shadow-2xl bg-transparent mobile-slide-down md:rounded-t-2xl"
             showCloseButton={false}
-            onInteractOutside={(e) => {
+            onInteractOutside={() => {
               // Allow closing by clicking outside on mobile
               if (window.innerWidth < 768) {
                 setIsDialogOpen(false);
