@@ -16,6 +16,13 @@ Think of this project as the **cinema lobby and screen** where the conversation 
 - 📱 Fully responsive for all devices
 - ⚡ Real-time movie recommendations
 
+## Screenshots
+
+Frontend CineAI chat experience:
+
+![CineAI desktop chat](public/screenshots/Capture-2025-11-28-090946.png)
+![CineAI mobile chat](public/screenshots/Capture-2025-11-28-091048.png)
+
 ## Getting Started
 
 ### Prerequisites
@@ -65,6 +72,21 @@ Think of this project as the **cinema lobby and screen** where the conversation 
   - Returns structured JSON with recommendations and text responses
 
 This separation lets you **evolve the backend independently** (n8n flows, Node, Python, etc.) while keeping the same cinematic chat UI.
+
+### Full project (backend + data + n8n flow)
+
+The **main backend and data project** for this application lives in a separate repository:
+
+- [movie-recommendation-n8n](https://github.com/JoBarMa/movie-recommendation-n8n)
+
+That repository contains:
+- The **n8n flow JSON** that powers the recommendations
+- A **Python ingestion script** for TMDB + MySQL
+- SQL transformations and an **overview image of the n8n flow**
+
+Example high-level n8n flow view from that repo:
+
+![n8n flow overview](https://raw.githubusercontent.com/JoBarMa/movie-recommendation-n8n/main/n8n_flow_view.png)
 
 ## n8n Integration
 
