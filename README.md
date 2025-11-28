@@ -1,11 +1,17 @@
-# 🎬 CineAI - Frontend
+# 🎬 CineAI - Frontend (Chat UI)
 
-A modern, theater-inspired chat interface for movie recommendations powered by n8n workflows and AI. This is the frontend application for CineAI.
+This repository contains **only the frontend** of the CineAI experience: a modern, theater‑inspired chat interface that talks to an **external backend** (typically an **n8n** workflow) to generate movie recommendations.
+
+You can plug this UI into:
+- **Your own n8n workflow** (recommended)
+- **Any HTTP backend** that mimics the same JSON contract as the n8n flow
+
+Think of this project as the **cinema lobby and screen** where the conversation happens, while n8n (or another service) is the **projection room** doing the heavy processing.
 
 ## Features
 
-- 🎬 Beautiful, responsive chat UI with cinema-inspired design
-- 🤖 AI-powered movie recommendations via n8n workflows
+- 🎬 **Beautiful, responsive chat UI** with cinema-inspired design
+- 🤖 **Backend-agnostic**: works great with n8n, but any compatible API can be used
 - 🎨 Modern glassmorphism design with smooth animations
 - 📱 Fully responsive for all devices
 - ⚡ Real-time movie recommendations
@@ -45,9 +51,24 @@ A modern, theater-inspired chat interface for movie recommendations powered by n
 4. **Open your browser:**
    Navigate to [http://localhost:3000](http://localhost:3000)
 
+## Architecture Overview
+
+- **Frontend (this repo)**:
+  - Built with **Next.js** + **React** + **Tailwind CSS** + **Framer Motion**
+  - Renders the cinema-style chat interface and calls an internal API route
+  - Fully stateless with respect to recommendations (all logic lives in the backend)
+
+- **Backend (external, not in this repo)**:
+  - Typically an **n8n workflow** exposed via a **webhook URL**
+  - Receives the user message from this frontend
+  - Calls LLMs / APIs / your own services
+  - Returns structured JSON with recommendations and text responses
+
+This separation lets you **evolve the backend independently** (n8n flows, Node, Python, etc.) while keeping the same cinematic chat UI.
+
 ## n8n Integration
 
-This frontend connects to an n8n workflow to get movie recommendations. 
+By default we assume an **n8n workflow** is the backend that serves movie recommendations.
 
 ### Required n8n Workflow Setup
 
@@ -67,7 +88,7 @@ Your n8n workflow should:
 
 ### Detailed Integration Guide
 
-See [N8N_INTEGRATION.md](./N8N_INTEGRATION.md) for complete setup instructions.
+See `N8N_INTEGRATION.md` for complete setup instructions and example flows.
 
 ### Quick Test
 

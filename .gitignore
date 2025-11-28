@@ -48,6 +48,9 @@ Thumbs.db
 # Railway
 .railway/
 
+# Local assets (not needed in repo)
+images_screenshots/
+
 # Temporary files
 *.tmp
 *.temp
